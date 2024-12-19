@@ -28,6 +28,8 @@ declare -rg MR_GITHUB_BASEURL="${MR_GITHUB_BASEURL:-https://github.com}"
 declare -rg MR_USER_PREFIX="${MR_USER_PREFIX:-runner-}"
 # runners' local users base directory, overrides the `HOME` setting in `/etc/default/useradd`
 declare -rg MR_USER_BASE
+# runners' local users home directory
+declare -rg MR_USER_HOME
 # URL of this application
 declare -rg MR_URL='https://github.com/vbem/multi-runners'
 
@@ -165,6 +167,7 @@ function mr::addUser {
     fi
     useraddArgs=(-m -s /bin/bash -G 'runners,docker')
     [[ -n "$MR_USER_BASE" ]] && useraddArgs+=('-b' "$MR_USER_BASE")
+    [[ -n "$MR_USER_HOME" ]] && useraddArgs+=('-d' "$MR_USER_HOME")
     run::logFailed sudo tee /etc/sudoers.d/runners <<<'%runners ALL=(ALL) NOPASSWD:ALL' >/dev/null \
         && run::logFailed sudo groupadd -f 'runners' >&2 \
         && run::logFailed sudo groupadd -f 'docker' >&2 \
