@@ -30,6 +30,8 @@ declare -rg MR_USER_PREFIX="${MR_USER_PREFIX:-runner-}"
 declare -rg MR_USER_BASE
 # runners' local users home directory
 declare -rg MR_USER_HOME
+# service template path
+declare -rg MR_SERVICE_TEMPLATE
 # URL of this application
 declare -rg MR_URL='https://github.com/vbem/multi-runners'
 
@@ -303,7 +305,7 @@ function mr::addRunner {
             cd .. && tar -xzf "$tarpath"
             echo "$dotenv" >> .env
             ./config.sh --unattended --replace --url '$url' --token '$token' --name '$name' --labels '$labels' --runnergroup '$group'
-            sudo ./svc.sh install '$user'
+            sudo GITHUB_ACTIONS_RUNNER_SERVICE_TEMPLATE="$MR_SERVICE_TEMPLATE" ./svc.sh install '$user'
             if [[ "$(getenforce 2>/dev/null)" == "Enforcing" ]]; then
                 chcon -t bin_t ./runsvc.sh # https://github.com/vbem/multi-runners/issues/9
             fi
